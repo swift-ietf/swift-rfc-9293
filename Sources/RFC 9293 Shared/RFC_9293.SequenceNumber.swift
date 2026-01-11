@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import Standards
+public import Standard_Library_Extensions
 
 extension RFC_9293 {
     /// 32-bit TCP Sequence Number with modular arithmetic

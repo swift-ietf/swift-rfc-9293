@@ -10,4 +10,4 @@
 //
 // ===----------------------------------------------------------------------===//
 
-@_exported public import Standards
+@_exported public import Standard_Library_Extensions

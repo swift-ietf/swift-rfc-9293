@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import Standards
+public import Standard_Library_Extensions
 
 extension RFC_9293.`3`.`1` {
     /// Data Offset field per RFC 9293 Section 3.1

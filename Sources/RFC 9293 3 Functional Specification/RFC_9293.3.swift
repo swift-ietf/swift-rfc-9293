@@ -11,7 +11,7 @@
 // ===----------------------------------------------------------------------===//
 
 @_exported public import RFC_9293_Shared
-public import Standards
+public import Standard_Library_Extensions
 
 extension RFC_9293 {
     /// Section 3: Functional Specification
