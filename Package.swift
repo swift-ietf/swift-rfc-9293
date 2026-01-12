@@ -13,7 +13,7 @@ extension Target.Dependency {
     static let rfc9293Section3 = Self.target(name: .rfc9293Section3)
     static let standards = Self.product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
     static let binary = Self.product(name: "Binary Primitives", package: "swift-binary-primitives")
-    static let incits41986 = Self.product(name: "INCITS 4 1986", package: "swift-incits-4-1986")
+    static let incits41986 = Self.product(name: "ASCII", package: "swift-ascii")
     static let rfc791 = Self.product(name: "RFC 791", package: "swift-rfc-791")
 }
 
@@ -33,7 +33,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
         .package(path: "../../swift-primitives/swift-binary-primitives"),
-        .package(path: "../swift-incits-4-1986"),
+        .package(path: "../../swift-foundations/swift-ascii"),
         .package(path: "../swift-rfc-791"),
     ],
     targets: [
