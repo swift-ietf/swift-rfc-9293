@@ -31,10 +31,10 @@ let package = Package(
         .library(name: .rfc9293Section3, targets: [.rfc9293Section3]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", from: "0.0.1"),
-        .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", from: "0.0.1"),
-        .package(url: "https://github.com/swift-foundations/swift-ascii.git", from: "0.0.1"),
-        .package(url: "https://github.com/swift-standards/swift-rfc-791.git", from: "0.0.1"),
+        .package(path: "../../swift-primitives/swift-standard-library-extensions"),
+        .package(path: "../../swift-primitives/swift-binary-primitives"),
+        .package(path: "../../swift-foundations/swift-ascii"),
+        .package(path: "../swift-rfc-791"),
     ],
     targets: [
         // Shared types with no dependencies on section targets
