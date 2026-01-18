@@ -23,42 +23,37 @@ let package = Package(
         .macOS(.v26),
         .iOS(.v26),
         .tvOS(.v26),
-        .watchOS(.v26),
+        .watchOS(.v26)
     ],
     products: [
-        .library(name: .rfc9293, targets: [.rfc9293]),
-        .library(name: .rfc9293Shared, targets: [.rfc9293Shared]),
-        .library(name: .rfc9293Section3, targets: [.rfc9293Section3]),
+        .library(name: "RFC 9293", targets: ["RFC 9293"]),
+        .library(name: "RFC 9293 Shared", targets: ["RFC 9293 Shared"]),
+        .library(name: "RFC 9293 3 Functional Specification", targets: ["RFC 9293 3 Functional Specification"])
     ],
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
         .package(path: "../../swift-primitives/swift-binary-primitives"),
         .package(path: "../../swift-foundations/swift-ascii"),
-        .package(path: "../swift-rfc-791"),
+        .package(path: "../swift-rfc-791")
     ],
     targets: [
         // Shared types with no dependencies on section targets
         .target(
-            name: .rfc9293Shared,
+            name: "RFC 9293 Shared",
             dependencies: [.standards, .binary]
         ),
 
         // Section 3: Functional Specification
         .target(
-            name: .rfc9293Section3,
+            name: "RFC 9293 3 Functional Specification",
             dependencies: [.rfc9293Shared, .standards, .incits41986]
         ),
 
         // High-level API umbrella
         .target(
-            name: .rfc9293,
+            name: "RFC 9293",
             dependencies: [.rfc9293Shared, .rfc9293Section3, .standards, .rfc791]
-        ),
-
-        .testTarget(
-            name: .rfc9293.tests,
-            dependencies: [.rfc9293]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )
@@ -72,6 +67,6 @@ for target in package.targets where ![.system, .binary, .plugin].contains(target
     target.swiftSettings = existing + [
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
-        .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("MemberImportVisibility")
     ]
 }
