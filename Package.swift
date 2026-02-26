@@ -53,7 +53,13 @@ let package = Package(
         .target(
             name: "RFC 9293",
             dependencies: [.rfc9293Shared, .rfc9293Section3, .standards, .rfc791]
-        )
+        ),
+        .testTarget(
+            name: "RFC 9293 Tests",
+            dependencies: [
+                "RFC 9293",
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -68,6 +74,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
         .enableExperimentalFeature("SuppressedAssociatedTypes"),
         .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
