@@ -21,14 +21,14 @@ struct RFC_9293_Tests {
     @Suite("Port")
     struct PortTests {
 
-        @Test("Port initialization")
-        func portInit() {
+        @Test
+        func `Port initialization`() {
             let port = RFC_9293.Port(8080)
             #expect(port.rawValue == 8080)
         }
 
-        @Test("Well-known port constants")
-        func wellKnownPorts() {
+        @Test
+        func `Well-known port constants`() {
             #expect(RFC_9293.Port.http.rawValue == 80)
             #expect(RFC_9293.Port.https.rawValue == 443)
             #expect(RFC_9293.Port.ssh.rawValue == 22)
@@ -36,8 +36,8 @@ struct RFC_9293_Tests {
             #expect(RFC_9293.Port.smtp.rawValue == 25)
         }
 
-        @Test("Port classification")
-        func portClassification() {
+        @Test
+        func `Port classification`() {
             let wellKnown = RFC_9293.Port(80)
             let registered = RFC_9293.Port(8080)
             let dynamic = RFC_9293.Port(50000)
@@ -55,15 +55,15 @@ struct RFC_9293_Tests {
             #expect(dynamic.isDynamic)
         }
 
-        @Test("Port byte parsing")
-        func portByteParsing() throws {
+        @Test
+        func `Port byte parsing`() throws {
             let bytes: [UInt8] = [0x1F, 0x90]  // 8080 in big-endian
             let port = try RFC_9293.Port(bytes: bytes)
             #expect(port.rawValue == 8080)
         }
 
-        @Test("Port serialization")
-        func portSerialization() {
+        @Test
+        func `Port serialization`() {
             let port = RFC_9293.Port(8080)
             var buffer: [UInt8] = []
             RFC_9293.Port.serialize(port, into: &buffer)
@@ -76,36 +76,36 @@ struct RFC_9293_Tests {
     @Suite("SequenceNumber")
     struct SequenceNumberTests {
 
-        @Test("Sequence number creation")
-        func seqNumInit() {
+        @Test
+        func `Sequence number creation`() {
             let seq = RFC_9293.SequenceNumber(rawValue: 12345)
             #expect(seq.rawValue == 12345)
         }
 
-        @Test("Modular addition")
-        func modularAddition() {
+        @Test
+        func `Modular addition`() {
             let seq = RFC_9293.SequenceNumber(rawValue: 100)
             let next = seq + 50
             #expect(next.rawValue == 150)
         }
 
-        @Test("Modular addition with wraparound")
-        func modularAdditionWraparound() {
+        @Test
+        func `Modular addition with wraparound`() {
             let seq = RFC_9293.SequenceNumber(rawValue: UInt32.max - 10)
             let next = seq + 20
             #expect(next.rawValue == 9)  // Wraps around
         }
 
-        @Test("Modular comparison - normal case")
-        func modularComparisonNormal() {
+        @Test
+        func `Modular comparison - normal case`() {
             let a = RFC_9293.SequenceNumber(rawValue: 100)
             let b = RFC_9293.SequenceNumber(rawValue: 200)
             #expect(a < b)
             #expect(!(b < a))
         }
 
-        @Test("Modular comparison - wraparound")
-        func modularComparisonWraparound() {
+        @Test
+        func `Modular comparison - wraparound`() {
             // When sequence numbers are close to wraparound
             let high = RFC_9293.SequenceNumber(rawValue: UInt32.max - 100)
             let low = RFC_9293.SequenceNumber(rawValue: 100)
@@ -113,8 +113,8 @@ struct RFC_9293_Tests {
             #expect(high < low)
         }
 
-        @Test("isWithin range check")
-        func isWithinRange() {
+        @Test
+        func `isWithin range check`() {
             let left = RFC_9293.SequenceNumber(rawValue: 100)
             let right = RFC_9293.SequenceNumber(rawValue: 200)
             let inside = RFC_9293.SequenceNumber(rawValue: 150)
@@ -124,8 +124,8 @@ struct RFC_9293_Tests {
             #expect(!outside.isWithin(left: left, right: right))
         }
 
-        @Test("Sequence number byte parsing")
-        func seqNumByteParsing() throws {
+        @Test
+        func `Sequence number byte parsing`() throws {
             let bytes: [UInt8] = [0x00, 0x01, 0x02, 0x03]  // 66051 in big-endian
             let seq = try RFC_9293.SequenceNumber(bytes: bytes)
             #expect(seq.rawValue == 0x0001_0203)
@@ -137,39 +137,39 @@ struct RFC_9293_Tests {
     @Suite("State")
     struct StateTests {
 
-        @Test("State raw values")
-        func stateRawValues() {
+        @Test
+        func `State raw values`() {
             #expect(RFC_9293.`3`.`3`.State.closed.rawValue == "CLOSED")
             #expect(RFC_9293.`3`.`3`.State.established.rawValue == "ESTABLISHED")
             #expect(RFC_9293.`3`.`3`.State.synSent.rawValue == "SYN-SENT")
         }
 
-        @Test("canSendData states")
-        func canSendDataStates() {
+        @Test
+        func `canSendData states`() {
             #expect(RFC_9293.`3`.`3`.State.established.canSendData)
             #expect(RFC_9293.`3`.`3`.State.closeWait.canSendData)
             #expect(!RFC_9293.`3`.`3`.State.closed.canSendData)
             #expect(!RFC_9293.`3`.`3`.State.listen.canSendData)
         }
 
-        @Test("canReceiveData states")
-        func canReceiveDataStates() {
+        @Test
+        func `canReceiveData states`() {
             #expect(RFC_9293.`3`.`3`.State.established.canReceiveData)
             #expect(RFC_9293.`3`.`3`.State.finWait1.canReceiveData)
             #expect(RFC_9293.`3`.`3`.State.finWait2.canReceiveData)
             #expect(!RFC_9293.`3`.`3`.State.closed.canReceiveData)
         }
 
-        @Test("isSynchronized states")
-        func isSynchronizedStates() {
+        @Test
+        func `isSynchronized states`() {
             #expect(RFC_9293.`3`.`3`.State.established.isSynchronized)
             #expect(RFC_9293.`3`.`3`.State.finWait1.isSynchronized)
             #expect(!RFC_9293.`3`.`3`.State.closed.isSynchronized)
             #expect(!RFC_9293.`3`.`3`.State.synSent.isSynchronized)
         }
 
-        @Test("isClosing states")
-        func isClosingStates() {
+        @Test
+        func `isClosing states`() {
             #expect(RFC_9293.`3`.`3`.State.finWait1.isClosing)
             #expect(RFC_9293.`3`.`3`.State.finWait2.isClosing)
             #expect(RFC_9293.`3`.`3`.State.timeWait.isClosing)
@@ -182,8 +182,8 @@ struct RFC_9293_Tests {
     @Suite("Flags")
     struct FlagsTests {
 
-        @Test("Individual flags")
-        func individualFlags() {
+        @Test
+        func `Individual flags`() {
             #expect(RFC_9293.`3`.`1`.Flags.fin.rawValue == 0x01)
             #expect(RFC_9293.`3`.`1`.Flags.syn.rawValue == 0x02)
             #expect(RFC_9293.`3`.`1`.Flags.rst.rawValue == 0x04)
@@ -192,8 +192,8 @@ struct RFC_9293_Tests {
             #expect(RFC_9293.`3`.`1`.Flags.urg.rawValue == 0x20)
         }
 
-        @Test("Combined flags")
-        func combinedFlags() {
+        @Test
+        func `Combined flags`() {
             let synAck: RFC_9293.`3`.`1`.Flags = [.syn, .ack]
             #expect(synAck.contains(.syn))
             #expect(synAck.contains(.ack))
@@ -201,8 +201,8 @@ struct RFC_9293_Tests {
             #expect(synAck.rawValue == 0x12)
         }
 
-        @Test("Common combinations")
-        func commonCombinations() {
+        @Test
+        func `Common combinations`() {
             #expect(RFC_9293.`3`.`1`.Flags.synAck == [.syn, .ack])
             #expect(RFC_9293.`3`.`1`.Flags.finAck == [.fin, .ack])
         }
@@ -213,38 +213,38 @@ struct RFC_9293_Tests {
     @Suite("DataOffset")
     struct DataOffsetTests {
 
-        @Test("Minimum offset")
-        func minimumOffset() {
+        @Test
+        func `Minimum offset`() {
             let offset = RFC_9293.`3`.`1`.DataOffset.minimum
             #expect(offset.rawValue == 5)
             #expect(offset.headerLength == 20)
             #expect(offset.optionsLength == 0)
         }
 
-        @Test("Maximum offset")
-        func maximumOffset() {
+        @Test
+        func `Maximum offset`() {
             let offset = RFC_9293.`3`.`1`.DataOffset.maximum
             #expect(offset.rawValue == 15)
             #expect(offset.headerLength == 60)
             #expect(offset.optionsLength == 40)
         }
 
-        @Test("Offset with options")
-        func offsetWithOptions() throws {
+        @Test
+        func `Offset with options`() throws {
             let offset = try RFC_9293.`3`.`1`.DataOffset(rawValue: 8)
             #expect(offset.headerLength == 32)
             #expect(offset.optionsLength == 12)
         }
 
-        @Test("Invalid offset too small")
-        func offsetTooSmall() {
+        @Test
+        func `Invalid offset too small`() {
             #expect(throws: RFC_9293.`3`.`1`.DataOffset.Error.self) {
                 try RFC_9293.`3`.`1`.DataOffset(rawValue: 4)
             }
         }
 
-        @Test("fromHeaderLength")
-        func fromHeaderLength() throws {
+        @Test
+        func `fromHeaderLength`() throws {
             let offset = try RFC_9293.`3`.`1`.DataOffset.fromHeaderLength(28)
             #expect(offset.rawValue == 7)
         }
@@ -255,8 +255,8 @@ struct RFC_9293_Tests {
     @Suite("Header")
     struct HeaderTests {
 
-        @Test("Header creation without options")
-        func headerCreationNoOptions() {
+        @Test
+        func `Header creation without options`() {
             let header = RFC_9293.`3`.`1`.Header(
                 sourcePort: .init(8080),
                 destinationPort: .http,
@@ -274,8 +274,8 @@ struct RFC_9293_Tests {
             #expect(header.options.isEmpty)
         }
 
-        @Test("Header byte parsing")
-        func headerByteParsing() throws {
+        @Test
+        func `Header byte parsing`() throws {
             // Construct a minimal 20-byte TCP header
             var bytes: [UInt8] = []
 
@@ -304,8 +304,8 @@ struct RFC_9293_Tests {
             #expect(header.window == 65535)
         }
 
-        @Test("Header serialization roundtrip")
-        func headerRoundtrip() throws {
+        @Test
+        func `Header serialization roundtrip`() throws {
             let original = RFC_9293.`3`.`1`.Header(
                 sourcePort: .init(12345),
                 destinationPort: .https,
@@ -334,29 +334,29 @@ struct RFC_9293_Tests {
     @Suite("Option")
     struct OptionTests {
 
-        @Test("MSS option")
-        func mssOption() {
+        @Test
+        func `MSS option`() {
             let option = RFC_9293.`3`.`2`.Option.maximumSegmentSize(1460)
             #expect(option.kind == 2)
             #expect(option.length == 4)
         }
 
-        @Test("Window scale option")
-        func windowScaleOption() {
+        @Test
+        func `Window scale option`() {
             let option = RFC_9293.`3`.`2`.Option.windowScale(7)
             #expect(option.kind == 3)
             #expect(option.length == 3)
         }
 
-        @Test("Timestamps option")
-        func timestampsOption() {
+        @Test
+        func `Timestamps option`() {
             let option = RFC_9293.`3`.`2`.Option.timestamps(value: 12345, echoReply: 67890)
             #expect(option.kind == 8)
             #expect(option.length == 10)
         }
 
-        @Test("Option parsing roundtrip")
-        func optionRoundtrip() throws {
+        @Test
+        func `Option parsing roundtrip`() throws {
             let original = RFC_9293.`3`.`2`.Option.maximumSegmentSize(1460)
             var buffer: [UInt8] = []
             RFC_9293.`3`.`2`.Option.serialize(original, into: &buffer)
@@ -376,25 +376,25 @@ struct RFC_9293_Tests {
     @Suite("Constants")
     struct ConstantsTests {
 
-        @Test("Protocol number")
-        func protocolNumber() {
+        @Test
+        func `Protocol number`() {
             #expect(RFC_9293.protocolNumber == 6)
         }
 
-        @Test("Header sizes")
-        func headerSizes() {
+        @Test
+        func `Header sizes`() {
             #expect(RFC_9293.minimumHeaderSize == 20)
             #expect(RFC_9293.maximumHeaderSize == 60)
         }
 
-        @Test("Default MSS values")
-        func defaultMSSValues() {
+        @Test
+        func `Default MSS values`() {
             #expect(RFC_9293.defaultMSSIPv4 == 536)
             #expect(RFC_9293.defaultMSSIPv6 == 1220)
         }
 
-        @Test("TIME-WAIT duration")
-        func timeWaitDuration() {
+        @Test
+        func `TIME-WAIT duration`() {
             #expect(RFC_9293.mslSeconds == 120)
             #expect(RFC_9293.timeWaitDurationSeconds == 240)
         }
@@ -405,8 +405,8 @@ struct RFC_9293_Tests {
     @Suite("TCB")
     struct TCBTests {
 
-        @Test("TCB socket creation")
-        func tcbSocketCreation() {
+        @Test
+        func `TCB socket creation`() {
             let socket = RFC_9293.TCB.Socket(
                 address: RFC_791.IPv4.Address(192, 168, 1, 1),
                 port: .init(8080)
@@ -414,8 +414,8 @@ struct RFC_9293_Tests {
             #expect(socket.port.rawValue == 8080)
         }
 
-        @Test("TCB computed properties")
-        func tcbComputedProperties() throws {
+        @Test
+        func `TCB computed properties`() throws {
             let sendVars = RFC_9293.`3`.`3`.Send.Variables(iss: .init(rawValue: 1000))
 
             let tcb = RFC_9293.TCB(
