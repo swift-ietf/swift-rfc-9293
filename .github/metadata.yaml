@@ -1,0 +1,10 @@
+# .github/metadata.yaml
+# Triaged by AI-assisted bulk pass (2026-04-29).
+description: "Swift implementation of RFC 9293: Transmission Control Protocol."
+topics:
+  - standards
+  - rfc
+  - rfc-9293
+  - tcp
+  - internet-protocols
+homepage: "https://swift-institute.org"
