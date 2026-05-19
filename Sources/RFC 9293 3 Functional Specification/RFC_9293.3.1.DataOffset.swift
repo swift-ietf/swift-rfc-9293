@@ -95,9 +95,11 @@ extension RFC_9293.`3`.`1`.DataOffset: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ offset: RFC_9293.`3`.`1`.DataOffset,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        // Data offset is 4 bits, upper nibble when combined with reserved bits
-        buffer.append(offset.rawValue << 4)
+    ) where Buffer.Element == Byte {
+        // DataOffset.rawValue stays UInt8 (arithmetic-domain × 4 multiplier
+        // per Section 3.1); bridge via Byte() at the conformance boundary.
+        // Data offset is 4 bits, upper nibble when combined with reserved bits.
+        buffer.append(Byte(offset.rawValue << 4))
     }
 }
 

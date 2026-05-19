@@ -57,7 +57,7 @@ struct RFC_9293_Tests {
 
         @Test
         func `Port byte parsing`() throws {
-            let bytes: [UInt8] = [0x1F, 0x90]  // 8080 in big-endian
+            let bytes: [Byte] = [0x1F, 0x90]  // 8080 in big-endian
             let port = try RFC_9293.Port(bytes: bytes)
             #expect(port.rawValue == 8080)
         }
@@ -65,7 +65,7 @@ struct RFC_9293_Tests {
         @Test
         func `Port serialization`() {
             let port = RFC_9293.Port(8080)
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_9293.Port.serialize(port, into: &buffer)
             #expect(buffer == [0x1F, 0x90])
         }
@@ -126,7 +126,7 @@ struct RFC_9293_Tests {
 
         @Test
         func `Sequence number byte parsing`() throws {
-            let bytes: [UInt8] = [0x00, 0x01, 0x02, 0x03]  // 66051 in big-endian
+            let bytes: [Byte] = [0x00, 0x01, 0x02, 0x03]  // 66051 in big-endian
             let seq = try RFC_9293.SequenceNumber(bytes: bytes)
             #expect(seq.rawValue == 0x0001_0203)
         }
@@ -277,7 +277,7 @@ struct RFC_9293_Tests {
         @Test
         func `Header byte parsing`() throws {
             // Construct a minimal 20-byte TCP header
-            var bytes: [UInt8] = []
+            var bytes: [Byte] = []
 
             // Source port: 8080 (0x1F90)
             bytes.append(contentsOf: [0x1F, 0x90])
@@ -316,7 +316,7 @@ struct RFC_9293_Tests {
                 checksum: 0xABCD,
                 urgentPointer: 0
             )
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_9293.`3`.`1`.Header.serialize(original, into: &buffer)
 
             let parsed = try RFC_9293.`3`.`1`.Header(bytes: buffer)
@@ -358,7 +358,7 @@ struct RFC_9293_Tests {
         @Test
         func `Option parsing roundtrip`() throws {
             let original = RFC_9293.`3`.`2`.Option.maximumSegmentSize(1460)
-            var buffer: [UInt8] = []
+            var buffer: [Byte] = []
             RFC_9293.`3`.`2`.Option.serialize(original, into: &buffer)
 
             let (parsed, consumed) = try RFC_9293.`3`.`2`.Option.parse(from: buffer)

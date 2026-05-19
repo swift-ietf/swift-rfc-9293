@@ -99,14 +99,16 @@ extension RFC_9293.SequenceNumber {
 extension RFC_9293.SequenceNumber {
     /// Creates a SequenceNumber from bytes (big-endian)
     public init<Bytes: Collection>(bytes: Bytes) throws(Error)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         guard bytes.count >= 4 else { throw .insufficientBytes }
 
         var iterator = bytes.makeIterator()
-        let b0 = iterator.next()!
-        let b1 = iterator.next()!
-        let b2 = iterator.next()!
-        let b3 = iterator.next()!
+        // UInt32 storage is arithmetic-domain (modular per Section 3.4); cross
+        // the byte-domain boundary via .underlying.
+        let b0 = iterator.next()!.underlying
+        let b1 = iterator.next()!.underlying
+        let b2 = iterator.next()!.underlying
+        let b3 = iterator.next()!.underlying
 
         let value = UInt32(b0) << 24 | UInt32(b1) << 16 | UInt32(b2) << 8 | UInt32(b3)
         self.init(__unchecked: (), rawValue: value)
@@ -119,7 +121,7 @@ extension RFC_9293.SequenceNumber: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ seq: RFC_9293.SequenceNumber,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
+    ) where Buffer.Element == Byte {
         buffer.append(contentsOf: seq.rawValue.bytes(endianness: .big))
     }
 }

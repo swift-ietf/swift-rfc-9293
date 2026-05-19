@@ -35,17 +35,23 @@ extension RFC_9293 {
         /// The TCP header
         public let header: `3`.`1`.Header
 
-        /// The segment data payload
-        public let data: [UInt8]
+        /// The segment data payload (opaque byte-domain)
+        public let data: [Byte]
 
-        private init(__unchecked: Void, header: `3`.`1`.Header, data: [UInt8]) {
+        private init(__unchecked: Void, header: `3`.`1`.Header, data: [Byte]) {
             self.header = header
             self.data = data
         }
 
         /// Creates a TCP segment with the specified header and data
-        public init(header: `3`.`1`.Header, data: [UInt8]) {
+        public init(header: `3`.`1`.Header, data: [Byte]) {
             self.init(__unchecked: (), header: header, data: data)
+        }
+
+        /// Stdlib-interop forwarder: construction from `[UInt8]` data.
+        @_disfavoredOverload
+        public init(header: `3`.`1`.Header, data: [UInt8]) {
+            self.init(__unchecked: (), header: header, data: [Byte](data))
         }
     }
 }
@@ -101,7 +107,7 @@ extension RFC_9293.Segment {
 extension RFC_9293.Segment {
     /// Creates a Segment from bytes
     public init<Bytes: Collection>(bytes: Bytes) throws(Error)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         let header: RFC_9293.`3`.`1`.Header
         do {
             header = try RFC_9293.`3`.`1`.Header(bytes: bytes)
@@ -126,7 +132,7 @@ extension RFC_9293.Segment: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ segment: RFC_9293.Segment,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
+    ) where Buffer.Element == Byte {
         RFC_9293.`3`.`1`.Header.serialize(segment.header, into: &buffer)
         buffer.append(contentsOf: segment.data)
     }

@@ -57,8 +57,9 @@ extension RFC_9293.`3`.`2` {
         /// Timestamps (Kind 8, RFC 7323)
         case timestamps(value: UInt32, echoReply: UInt32)
 
-        /// Unknown or unsupported option
-        case unknown(kind: UInt8, data: [UInt8])
+        /// Unknown or unsupported option (kind stays UInt8 to mirror Kind enum
+        /// rawValue; data is opaque byte-domain payload)
+        case unknown(kind: UInt8, data: [Byte])
     }
 }
 
@@ -139,10 +140,16 @@ extension RFC_9293.`3`.`2`.Option {
     public static func parse<Bytes: Collection>(
         from bytes: Bytes
     ) throws(Error) -> (option: Self, consumed: Int)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         var iterator = bytes.makeIterator()
 
-        guard let kind = iterator.next() else {
+        // Internal arithmetic-domain UInt8 byte stream; bridge from Byte via
+        // .underlying at the conformance boundary.
+        func nextByte() -> UInt8? {
+            nextByte()?.underlying
+        }
+
+        guard let kind = nextByte() else {
             throw .insufficientBytes
         }
 
@@ -154,32 +161,32 @@ extension RFC_9293.`3`.`2`.Option {
             return (.noOperation, 1)
 
         case 2:
-            guard let length = iterator.next(), length == 4 else {
+            guard let length = nextByte(), length == 4 else {
                 throw .invalidLength
             }
-            guard let hi = iterator.next(), let lo = iterator.next() else {
+            guard let hi = nextByte(), let lo = nextByte() else {
                 throw .insufficientBytes
             }
             let mss = UInt16(hi) << 8 | UInt16(lo)
             return (.maximumSegmentSize(mss), 4)
 
         case 3:
-            guard let length = iterator.next(), length == 3 else {
+            guard let length = nextByte(), length == 3 else {
                 throw .invalidLength
             }
-            guard let shift = iterator.next() else {
+            guard let shift = nextByte() else {
                 throw .insufficientBytes
             }
             return (.windowScale(shift), 3)
 
         case 4:
-            guard let length = iterator.next(), length == 2 else {
+            guard let length = nextByte(), length == 2 else {
                 throw .invalidLength
             }
             return (.sackPermitted, 2)
 
         case 5:
-            guard let length = iterator.next() else {
+            guard let length = nextByte() else {
                 throw .insufficientBytes
             }
             let dataLength = Int(length) - 2
@@ -192,10 +199,10 @@ extension RFC_9293.`3`.`2`.Option {
             blocks.reserveCapacity(blockCount)
 
             for _ in 0..<blockCount {
-                guard let l0 = iterator.next(), let l1 = iterator.next(),
-                    let l2 = iterator.next(), let l3 = iterator.next(),
-                    let r0 = iterator.next(), let r1 = iterator.next(),
-                    let r2 = iterator.next(), let r3 = iterator.next()
+                guard let l0 = nextByte(), let l1 = nextByte(),
+                    let l2 = nextByte(), let l3 = nextByte(),
+                    let r0 = nextByte(), let r1 = nextByte(),
+                    let r2 = nextByte(), let r3 = nextByte()
                 else {
                     throw .insufficientBytes
                 }
@@ -211,13 +218,13 @@ extension RFC_9293.`3`.`2`.Option {
             return (.sack(blocks), Int(length))
 
         case 8:
-            guard let length = iterator.next(), length == 10 else {
+            guard let length = nextByte(), length == 10 else {
                 throw .invalidLength
             }
-            guard let v0 = iterator.next(), let v1 = iterator.next(),
-                let v2 = iterator.next(), let v3 = iterator.next(),
-                let e0 = iterator.next(), let e1 = iterator.next(),
-                let e2 = iterator.next(), let e3 = iterator.next()
+            guard let v0 = nextByte(), let v1 = nextByte(),
+                let v2 = nextByte(), let v3 = nextByte(),
+                let e0 = nextByte(), let e1 = nextByte(),
+                let e2 = nextByte(), let e3 = nextByte()
             else {
                 throw .insufficientBytes
             }
@@ -226,7 +233,7 @@ extension RFC_9293.`3`.`2`.Option {
             return (.timestamps(value: value, echoReply: echo), 10)
 
         default:
-            guard let length = iterator.next() else {
+            guard let length = nextByte() else {
                 throw .insufficientBytes
             }
             let dataLength = Int(length) - 2
@@ -234,13 +241,13 @@ extension RFC_9293.`3`.`2`.Option {
                 throw .invalidLength
             }
 
-            var data: [UInt8] = []
+            var data: [Byte] = []
             data.reserveCapacity(dataLength)
             for _ in 0..<dataLength {
-                guard let byte = iterator.next() else {
+                guard let byte = nextByte() else {
                     throw .insufficientBytes
                 }
-                data.append(byte)
+                data.append(Byte(byte))
             }
             return (.unknown(kind: kind, data: data), Int(length))
         }
@@ -250,7 +257,7 @@ extension RFC_9293.`3`.`2`.Option {
     public static func parseAll<Bytes: Collection>(
         from bytes: Bytes
     ) throws(Error) -> [Self]
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         var options: [Self] = []
         var remaining = Array(bytes)
 
@@ -275,7 +282,7 @@ extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ option: RFC_9293.`3`.`2`.Option,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
+    ) where Buffer.Element == Byte {
         switch option {
         case .endOfOptionList:
             buffer.append(0)
@@ -291,7 +298,9 @@ extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
         case .windowScale(let shift):
             buffer.append(3)
             buffer.append(3)
-            buffer.append(shift)
+            // shift stays UInt8 (Option.windowScale associated value);
+            // bridge via Byte() at conformance boundary.
+            buffer.append(Byte(shift))
 
         case .sackPermitted:
             buffer.append(4)
@@ -299,7 +308,7 @@ extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
 
         case .sack(let blocks):
             buffer.append(5)
-            buffer.append(UInt8(2 + blocks.count * 8))
+            buffer.append(Byte(UInt8(2 + blocks.count * 8)))
             for block in blocks {
                 buffer.append(contentsOf: block.leftEdge.rawValue.bytes(endianness: .big))
                 buffer.append(contentsOf: block.rightEdge.rawValue.bytes(endianness: .big))
@@ -312,8 +321,10 @@ extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
             buffer.append(contentsOf: echoReply.bytes(endianness: .big))
 
         case .unknown(let kind, let data):
-            buffer.append(kind)
-            buffer.append(UInt8(2 + data.count))
+            // kind stays UInt8 (mirrors Kind enum rawValue); bridge.
+            buffer.append(Byte(kind))
+            buffer.append(Byte(UInt8(2 + data.count)))
+            // data is already [Byte] (opaque byte-domain payload).
             buffer.append(contentsOf: data)
         }
     }

@@ -96,8 +96,11 @@ extension RFC_9293.`3`.`1`.Flags: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ flags: RFC_9293.`3`.`1`.Flags,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(flags.rawValue)
+    ) where Buffer.Element == Byte {
+        // Flags.rawValue stays UInt8 (OptionSet requires RawValue:
+        // FixedWidthInteger; Byte is not FixedWidthInteger per Q3); bridge
+        // via Byte() at the conformance boundary.
+        buffer.append(Byte(flags.rawValue))
     }
 }
 

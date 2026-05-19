@@ -83,8 +83,8 @@ extension RFC_9293.`3`.`1` {
         /// Urgent pointer (offset from sequence number, significant only if URG flag is set)
         public let urgentPointer: UInt16
 
-        /// Options (variable length, up to 40 bytes)
-        public let options: [UInt8]
+        /// Options (variable length, up to 40 bytes, opaque byte-domain payload)
+        public let options: [Byte]
 
         private init(
             __unchecked: Void,
@@ -97,7 +97,7 @@ extension RFC_9293.`3`.`1` {
             window: UInt16,
             checksum: UInt16,
             urgentPointer: UInt16,
-            options: [UInt8]
+            options: [Byte]
         ) {
             self.sourcePort = sourcePort
             self.destinationPort = destinationPort
@@ -122,7 +122,7 @@ extension RFC_9293.`3`.`1` {
             window: UInt16,
             checksum: UInt16,
             urgentPointer: UInt16,
-            options: [UInt8]
+            options: [Byte]
         ) {
             self.init(
                 __unchecked: (),
@@ -136,6 +136,35 @@ extension RFC_9293.`3`.`1` {
                 checksum: checksum,
                 urgentPointer: urgentPointer,
                 options: options
+            )
+        }
+
+        /// Stdlib-interop forwarder: construction from `[UInt8]` options.
+        @_disfavoredOverload
+        public init(
+            sourcePort: RFC_9293.Port,
+            destinationPort: RFC_9293.Port,
+            sequenceNumber: RFC_9293.SequenceNumber,
+            acknowledgmentNumber: RFC_9293.SequenceNumber,
+            dataOffset: DataOffset,
+            flags: Flags,
+            window: UInt16,
+            checksum: UInt16,
+            urgentPointer: UInt16,
+            options: [UInt8]
+        ) {
+            self.init(
+                __unchecked: (),
+                sourcePort: sourcePort,
+                destinationPort: destinationPort,
+                sequenceNumber: sequenceNumber,
+                acknowledgmentNumber: acknowledgmentNumber,
+                dataOffset: dataOffset,
+                flags: flags,
+                window: window,
+                checksum: checksum,
+                urgentPointer: urgentPointer,
+                options: [Byte](options)
             )
         }
     }
@@ -176,39 +205,45 @@ extension RFC_9293.`3`.`1`.Header {
 extension RFC_9293.`3`.`1`.Header {
     /// Creates a Header from bytes (big-endian)
     public init<Bytes: Collection>(bytes: Bytes) throws(Error)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         guard bytes.count >= 20 else { throw .insufficientBytes }
 
         var iterator = bytes.makeIterator()
 
+        // Internal arithmetic-domain UInt8 byte stream; bridge from Byte at
+        // the conformance boundary via .underlying.
+        func next() -> UInt8 {
+            iterator.next()!.underlying
+        }
+
         // Source port (bytes 0-1)
-        let srcHi = iterator.next()!
-        let srcLo = iterator.next()!
+        let srcHi = next()
+        let srcLo = next()
         let srcPort = RFC_9293.Port(UInt16(srcHi) << 8 | UInt16(srcLo))
 
         // Destination port (bytes 2-3)
-        let dstHi = iterator.next()!
-        let dstLo = iterator.next()!
+        let dstHi = next()
+        let dstLo = next()
         let dstPort = RFC_9293.Port(UInt16(dstHi) << 8 | UInt16(dstLo))
 
         // Sequence number (bytes 4-7)
-        let seq0 = iterator.next()!
-        let seq1 = iterator.next()!
-        let seq2 = iterator.next()!
-        let seq3 = iterator.next()!
+        let seq0 = next()
+        let seq1 = next()
+        let seq2 = next()
+        let seq3 = next()
         let seqValue = UInt32(seq0) << 24 | UInt32(seq1) << 16 | UInt32(seq2) << 8 | UInt32(seq3)
         let seqNum = RFC_9293.SequenceNumber(rawValue: seqValue)
 
         // Acknowledgment number (bytes 8-11)
-        let ack0 = iterator.next()!
-        let ack1 = iterator.next()!
-        let ack2 = iterator.next()!
-        let ack3 = iterator.next()!
+        let ack0 = next()
+        let ack1 = next()
+        let ack2 = next()
+        let ack3 = next()
         let ackValue = UInt32(ack0) << 24 | UInt32(ack1) << 16 | UInt32(ack2) << 8 | UInt32(ack3)
         let ackNum = RFC_9293.SequenceNumber(rawValue: ackValue)
 
         // Data offset and reserved (byte 12)
-        let offsetByte = iterator.next()!
+        let offsetByte = next()
         let offsetValue = offsetByte >> 4
 
         let dataOffset: RFC_9293.`3`.`1`.DataOffset
@@ -223,32 +258,33 @@ extension RFC_9293.`3`.`1`.Header {
         }
 
         // Flags (byte 13)
-        let flagsByte = iterator.next()!
+        let flagsByte = next()
         let flags = RFC_9293.`3`.`1`.Flags(rawValue: flagsByte)
 
         // Window (bytes 14-15)
-        let winHi = iterator.next()!
-        let winLo = iterator.next()!
+        let winHi = next()
+        let winLo = next()
         let window = UInt16(winHi) << 8 | UInt16(winLo)
 
         // Checksum (bytes 16-17)
-        let csHi = iterator.next()!
-        let csLo = iterator.next()!
+        let csHi = next()
+        let csLo = next()
         let checksum = UInt16(csHi) << 8 | UInt16(csLo)
 
         // Urgent pointer (bytes 18-19)
-        let urgHi = iterator.next()!
-        let urgLo = iterator.next()!
+        let urgHi = next()
+        let urgLo = next()
         let urgentPointer = UInt16(urgHi) << 8 | UInt16(urgLo)
 
-        // Options (remaining bytes up to header length)
+        // Options (remaining bytes up to header length). Opaque byte-domain
+        // storage as [Byte].
         let optionsLength = dataOffset.optionsLength
         guard bytes.count >= 20 + optionsLength else { throw .insufficientBytes }
 
-        var options: [UInt8] = []
+        var options: [Byte] = []
         options.reserveCapacity(optionsLength)
         for _ in 0..<optionsLength {
-            options.append(iterator.next()!)
+            options.append(Byte(next()))
         }
 
         self.init(
@@ -273,7 +309,7 @@ extension RFC_9293.`3`.`1`.Header: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ header: RFC_9293.`3`.`1`.Header,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
+    ) where Buffer.Element == Byte {
         // Source port
         buffer.append(contentsOf: header.sourcePort.rawValue.bytes(endianness: .big))
 
@@ -286,11 +322,12 @@ extension RFC_9293.`3`.`1`.Header: Binary.Serializable {
         // Acknowledgment number
         buffer.append(contentsOf: header.acknowledgmentNumber.rawValue.bytes(endianness: .big))
 
-        // Data offset (4 bits) + reserved (4 bits)
-        buffer.append(header.dataOffset.rawValue << 4)
+        // Data offset (4 bits) + reserved (4 bits). DataOffset.rawValue stays
+        // UInt8 (arithmetic-domain × 4 multiplier); bridge via Byte().
+        buffer.append(Byte(header.dataOffset.rawValue << 4))
 
-        // Flags
-        buffer.append(header.flags.rawValue)
+        // Flags (stays UInt8 per OptionSet RawValue: FixedWidthInteger).
+        buffer.append(Byte(header.flags.rawValue))
 
         // Window
         buffer.append(contentsOf: header.window.bytes(endianness: .big))
@@ -301,7 +338,7 @@ extension RFC_9293.`3`.`1`.Header: Binary.Serializable {
         // Urgent pointer
         buffer.append(contentsOf: header.urgentPointer.bytes(endianness: .big))
 
-        // Options
+        // Options (opaque byte-domain payload, already [Byte])
         buffer.append(contentsOf: header.options)
     }
 }
