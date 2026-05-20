@@ -48,11 +48,8 @@ extension RFC_9293 {
             self.init(__unchecked: (), header: header, data: data)
         }
 
-        /// Stdlib-interop forwarder: construction from `[UInt8]` data.
-        @_disfavoredOverload
-        public init(header: `3`.`1`.Header, data: [UInt8]) {
-            self.init(__unchecked: (), header: header, data: [Byte](data))
-        }
+        // Stdlib-interop UInt8 forwarder lives in `RFC 9293 Standard Library
+        // Integration` per [API-BYTE-007].
     }
 }
 

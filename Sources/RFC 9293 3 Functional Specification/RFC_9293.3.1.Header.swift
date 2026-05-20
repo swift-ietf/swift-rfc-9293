@@ -139,34 +139,8 @@ extension RFC_9293.`3`.`1` {
             )
         }
 
-        /// Stdlib-interop forwarder: construction from `[UInt8]` options.
-        @_disfavoredOverload
-        public init(
-            sourcePort: RFC_9293.Port,
-            destinationPort: RFC_9293.Port,
-            sequenceNumber: RFC_9293.SequenceNumber,
-            acknowledgmentNumber: RFC_9293.SequenceNumber,
-            dataOffset: DataOffset,
-            flags: Flags,
-            window: UInt16,
-            checksum: UInt16,
-            urgentPointer: UInt16,
-            options: [UInt8]
-        ) {
-            self.init(
-                __unchecked: (),
-                sourcePort: sourcePort,
-                destinationPort: destinationPort,
-                sequenceNumber: sequenceNumber,
-                acknowledgmentNumber: acknowledgmentNumber,
-                dataOffset: dataOffset,
-                flags: flags,
-                window: window,
-                checksum: checksum,
-                urgentPointer: urgentPointer,
-                options: [Byte](options)
-            )
-        }
+        // Stdlib-interop UInt8 forwarder lives in `RFC 9293 Standard Library
+        // Integration` per [API-BYTE-007].
     }
 }
 

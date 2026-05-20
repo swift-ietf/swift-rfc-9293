@@ -5,6 +5,7 @@ extension String {
     static let rfc9293 = "RFC 9293"
     static let rfc9293Shared = "RFC 9293 Shared"
     static let rfc9293Section3 = "RFC 9293 3 Functional Specification"
+    static let rfc9293SLI = "RFC 9293 Standard Library Integration"
 }
 
 extension Target.Dependency {
@@ -15,6 +16,7 @@ extension Target.Dependency {
     static let binary = Self.product(name: "Binary Primitives", package: "swift-binary-primitives")
     static let incits41986 = Self.product(name: "ASCII Primitives", package: "swift-ascii-primitives")
     static let rfc791 = Self.product(name: "RFC 791", package: "swift-rfc-791")
+    static let bytePrimitivesSLI = Self.product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives")
 }
 
 let package = Package(
@@ -28,11 +30,13 @@ let package = Package(
     products: [
         .library(name: "RFC 9293", targets: ["RFC 9293"]),
         .library(name: "RFC 9293 Shared", targets: ["RFC 9293 Shared"]),
-        .library(name: "RFC 9293 3 Functional Specification", targets: ["RFC 9293 3 Functional Specification"])
+        .library(name: "RFC 9293 3 Functional Specification", targets: ["RFC 9293 3 Functional Specification"]),
+        .library(name: "RFC 9293 Standard Library Integration", targets: ["RFC 9293 Standard Library Integration"])
     ],
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
         .package(path: "../../swift-primitives/swift-binary-primitives"),
+        .package(path: "../../swift-primitives/swift-byte-primitives"),
         .package(path: "../../swift-primitives/swift-ascii-primitives"),
         .package(path: "../swift-rfc-791")
     ],
@@ -54,10 +58,23 @@ let package = Package(
             name: "RFC 9293",
             dependencies: [.rfc9293Shared, .rfc9293Section3, .standards, .rfc791]
         ),
+
+        // Stdlib-interop forwarders per [API-BYTE-007]
+        .target(
+            name: "RFC 9293 Standard Library Integration",
+            dependencies: [.rfc9293, .rfc9293Section3, .bytePrimitivesSLI]
+        ),
         .testTarget(
             name: "RFC 9293 Tests",
             dependencies: [
                 "RFC 9293",
+            ]
+        ),
+        .testTarget(
+            name: "RFC 9293 Standard Library Integration Tests",
+            dependencies: [
+                "RFC 9293",
+                "RFC 9293 Standard Library Integration",
             ]
         ),
     ],
