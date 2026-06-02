@@ -34,11 +34,11 @@ let package = Package(
         .library(name: "RFC 9293 Standard Library Integration", targets: ["RFC 9293 Standard Library Integration"])
     ],
     dependencies: [
-        .package(path: "../../swift-primitives/swift-standard-library-extensions"),
-        .package(path: "../../swift-primitives/swift-binary-primitives"),
-        .package(path: "../../swift-primitives/swift-byte-primitives"),
-        .package(path: "../../swift-primitives/swift-ascii-primitives"),
-        .package(path: "../swift-rfc-791")
+        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main")
     ],
     targets: [
         // Shared types with no dependencies on section targets
