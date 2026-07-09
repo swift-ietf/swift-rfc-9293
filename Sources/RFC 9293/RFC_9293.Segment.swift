@@ -10,6 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
+public import Binary_Serializable_Primitives
 public import Standard_Library_Extensions
 
 extension RFC_9293 {
@@ -82,8 +83,8 @@ extension RFC_9293.Segment {
         var seq = header.sequenceNumber + UInt32(data.count)
 
         // SYN and FIN consume a sequence number
-        if header.flags.contains(.syn) { seq = seq + 1 }
-        if header.flags.contains(.fin) { seq = seq + 1 }
+        if header.flags.contains(.syn) { seq += 1 }
+        if header.flags.contains(.fin) { seq += 1 }
 
         return seq
     }

@@ -15,8 +15,8 @@
 // carrying `[UInt8]` (e.g. network buffers, file-read frames) via
 // `.lazy.map(Byte.init)`. Per [API-BYTE-007] (byte-discipline skill).
 
-public import RFC_9293
 internal import Byte_Primitives
+public import RFC_9293
 
 extension RFC_9293.Segment {
     /// Stdlib-interop forwarder: construction from `[UInt8]` data.

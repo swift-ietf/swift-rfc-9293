@@ -16,9 +16,9 @@
 // from parsed network buffers) via `.lazy.map(Byte.init)`. Per
 // [API-BYTE-007] (byte-discipline skill).
 
+internal import Byte_Primitives
 public import RFC_9293_3_Functional_Specification
 public import RFC_9293_Shared
-internal import Byte_Primitives
 
 extension RFC_9293.`3`.`1`.Header {
     /// Stdlib-interop forwarder: construction with `[UInt8]` options.
