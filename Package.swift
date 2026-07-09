@@ -14,6 +14,7 @@ extension Target.Dependency {
     static let rfc9293Section3 = Self.target(name: .rfc9293Section3)
     static let standards = Self.product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
     static let binary = Self.product(name: "Binary Primitives", package: "swift-binary-primitives")
+    static let binarySerializable = Self.product(name: "Binary Serializable Primitives", package: "swift-binary-serializer-primitives")
     static let incits41986 = Self.product(name: "ASCII Primitives", package: "swift-ascii-primitives")
     static let rfc791 = Self.product(name: "RFC 791", package: "swift-rfc-791")
     static let bytePrimitivesSLI = Self.product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives")
@@ -36,6 +37,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main")
@@ -44,19 +46,19 @@ let package = Package(
         // Shared types with no dependencies on section targets
         .target(
             name: "RFC 9293 Shared",
-            dependencies: [.standards, .binary]
+            dependencies: [.standards, .binary, .binarySerializable]
         ),
 
         // Section 3: Functional Specification
         .target(
             name: "RFC 9293 3 Functional Specification",
-            dependencies: [.rfc9293Shared, .standards, .incits41986]
+            dependencies: [.rfc9293Shared, .standards, .incits41986, .binarySerializable]
         ),
 
         // High-level API umbrella
         .target(
             name: "RFC 9293",
-            dependencies: [.rfc9293Shared, .rfc9293Section3, .standards, .rfc791]
+            dependencies: [.rfc9293Shared, .rfc9293Section3, .standards, .rfc791, .binarySerializable]
         ),
 
         // Stdlib-interop forwarders per [API-BYTE-007]
