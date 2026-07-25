@@ -1,0 +1,8 @@
+version: 1
+builder:
+  configs:
+  - documentation_targets:
+    - RFC 9293
+    - RFC 9293 Shared
+    - RFC 9293 3 Functional Specification
+    - RFC 9293 Standard Library Integration
