@@ -221,10 +221,20 @@ extension RFC_9293.`3`.`1`.Header {
         let offsetByte = next()
         let offsetValue = offsetByte >> 4
 
+        // Workaround for swift-institute/Issues#83: a typed-throws function
+        // (`throws(Error)`) throwing its own error type from inside a
+        // concrete-typed `catch` clause whose `do` block throws a different
+        // concrete error type (`DataOffset.Error`) crashes SILGen. Moving the
+        // throw lexically out of the catch clause avoids it. Restore the
+        // `do`/`catch` shape once the toolchain implements the conversion.
         let dataOffset: RFC_9293.`3`.`1`.DataOffset
-        do {
-            dataOffset = try RFC_9293.`3`.`1`.DataOffset(rawValue: offsetValue)
-        } catch let error as RFC_9293.`3`.`1`.DataOffset.Error {
+        let dataOffsetOutcome = Result { () throws(RFC_9293.`3`.`1`.DataOffset.Error) in
+            try RFC_9293.`3`.`1`.DataOffset(rawValue: offsetValue)
+        }
+        switch dataOffsetOutcome {
+        case .success(let value):
+            dataOffset = value
+        case .failure(let error):
             switch error {
             case .valueTooSmall: throw Error.dataOffsetTooSmall
             case .valueTooLarge: throw Error.dataOffsetTooLarge

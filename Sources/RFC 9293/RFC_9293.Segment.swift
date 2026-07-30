@@ -106,10 +106,20 @@ extension RFC_9293.Segment {
     /// Creates a Segment from bytes
     public init<Bytes: Collection>(bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
+        // Workaround for swift-institute/Issues#83: a typed-throws function
+        // (`throws(Error)`) throwing its own error type from inside a
+        // concrete-typed `catch` clause whose `do` block throws a different
+        // concrete error type (`Header.Error`) crashes SILGen. Moving the
+        // throw lexically out of the catch clause avoids it. Restore the
+        // `do`/`catch` shape once the toolchain implements the conversion.
         let header: RFC_9293.`3`.`1`.Header
-        do {
-            header = try RFC_9293.`3`.`1`.Header(bytes: bytes)
-        } catch let error as RFC_9293.`3`.`1`.Header.Error {
+        let headerOutcome = Result { () throws(RFC_9293.`3`.`1`.Header.Error) in
+            try RFC_9293.`3`.`1`.Header(bytes: bytes)
+        }
+        switch headerOutcome {
+        case .success(let value):
+            header = value
+        case .failure(let error):
             switch error {
             case .insufficientBytes: throw Error.insufficientBytes
             case .dataOffsetTooSmall: throw Error.invalidDataOffset
