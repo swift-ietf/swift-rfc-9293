@@ -138,7 +138,7 @@ extension RFC_9293.`3`.`2`.Option {
 
 extension RFC_9293.`3`.`2`.Option {
     /// Parses a single option from bytes, returning the option and bytes consumed
-    public static func parse<Bytes: Collection>(
+    public static func parse<Bytes: Swift.Collection>(
         from bytes: Bytes
     ) throws(Error) -> (option: Self, consumed: Int)
     where Bytes.Element == Byte {
@@ -255,7 +255,7 @@ extension RFC_9293.`3`.`2`.Option {
     }
 
     /// Parses all options from a byte buffer
-    public static func parseAll<Bytes: Collection>(
+    public static func parseAll<Bytes: Swift.Collection>(
         from bytes: Bytes
     ) throws(Error) -> [Self]
     where Bytes.Element == Byte {

@@ -90,7 +90,7 @@ extension RFC_9293.Port {
 
 extension RFC_9293.Port {
     /// Creates a Port from bytes (big-endian)
-    public init<Bytes: Collection>(bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var iterator = bytes.makeIterator()
 

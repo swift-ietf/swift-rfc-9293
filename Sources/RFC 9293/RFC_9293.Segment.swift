@@ -104,7 +104,7 @@ extension RFC_9293.Segment {
 
 extension RFC_9293.Segment {
     /// Creates a Segment from bytes
-    public init<Bytes: Collection>(bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         // Workaround for swift-institute/Issues#83: a typed-throws function
         // (`throws(Error)`) throwing its own error type from inside a

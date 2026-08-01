@@ -99,7 +99,7 @@ extension RFC_9293.SequenceNumber {
 
 extension RFC_9293.SequenceNumber {
     /// Creates a SequenceNumber from bytes (big-endian)
-    public init<Bytes: Collection>(bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard bytes.count >= 4 else { throw .insufficientBytes }
 

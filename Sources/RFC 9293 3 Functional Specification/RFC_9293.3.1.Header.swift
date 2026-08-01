@@ -179,7 +179,7 @@ extension RFC_9293.`3`.`1`.Header {
 
 extension RFC_9293.`3`.`1`.Header {
     /// Creates a Header from bytes (big-endian)
-    public init<Bytes: Collection>(bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard bytes.count >= 20 else { throw .insufficientBytes }
 
