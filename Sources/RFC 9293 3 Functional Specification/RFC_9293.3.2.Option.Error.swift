@@ -23,6 +23,7 @@ extension RFC_9293.`3`.`2`.Option.Error: CustomStringConvertible {
         switch self {
         case .insufficientBytes:
             return "Not enough bytes to parse TCP option"
+
         case .invalidLength:
             return "Invalid option length"
         }
