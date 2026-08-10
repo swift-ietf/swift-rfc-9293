@@ -107,8 +107,7 @@ extension RFC_9293.`3`.`3`.Send.Variables {
 
     /// Amount of data that can be sent (usable window)
     public var usableWindow: UInt32 {
-        let available = una + UInt32(wnd) - nxt
-        return available
+        return una + UInt32(wnd) - nxt
     }
 
     /// Returns true if the send window is full

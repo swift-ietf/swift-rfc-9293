@@ -119,6 +119,7 @@ extension RFC_9293.Segment {
         switch headerOutcome {
         case .success(let value):
             header = value
+
         case .failure(let error):
             switch error {
             case .insufficientBytes: throw Error.insufficientBytes

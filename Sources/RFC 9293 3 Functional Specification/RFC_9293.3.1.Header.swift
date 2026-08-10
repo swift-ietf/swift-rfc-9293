@@ -234,6 +234,7 @@ extension RFC_9293.`3`.`1`.Header {
         switch dataOffsetOutcome {
         case .success(let value):
             dataOffset = value
+
         case .failure(let error):
             switch error {
             case .valueTooSmall: throw Error.dataOffsetTooSmall

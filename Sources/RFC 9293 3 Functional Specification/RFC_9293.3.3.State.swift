@@ -99,6 +99,7 @@ extension RFC_9293.`3`.`3`.State {
         switch self {
         case .established, .closeWait:
             return true
+
         default:
             return false
         }
@@ -109,6 +110,7 @@ extension RFC_9293.`3`.`3`.State {
         switch self {
         case .established, .finWait1, .finWait2:
             return true
+
         default:
             return false
         }
@@ -119,6 +121,7 @@ extension RFC_9293.`3`.`3`.State {
         switch self {
         case .established, .finWait1, .finWait2, .closeWait, .closing, .lastAck, .timeWait:
             return true
+
         default:
             return false
         }
@@ -129,6 +132,7 @@ extension RFC_9293.`3`.`3`.State {
         switch self {
         case .finWait1, .finWait2, .closing, .lastAck, .timeWait:
             return true
+
         default:
             return false
         }

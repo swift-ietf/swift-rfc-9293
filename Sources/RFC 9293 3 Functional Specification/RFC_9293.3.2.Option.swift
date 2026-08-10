@@ -338,19 +338,26 @@ extension RFC_9293.`3`.`2`.Option: CustomStringConvertible {
         switch self {
         case .endOfOptionList:
             return "EOL"
+
         case .noOperation:
             return "NOP"
+
         case .maximumSegmentSize(let mss):
             return "MSS=\(mss)"
+
         case .windowScale(let shift):
             return "WS=\(shift)"
+
         case .sackPermitted:
             return "SACK-OK"
+
         case .sack(let blocks):
             let ranges = blocks.map { "\($0.leftEdge)-\($0.rightEdge)" }
             return "SACK[\(ranges.joined(separator: ","))]"
+
         case .timestamps(let value, let echo):
             return "TS=\(value)/\(echo)"
+
         case .unknown(let kind, _):
             return "OPT(\(kind))"
         }
