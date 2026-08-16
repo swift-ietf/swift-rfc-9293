@@ -147,7 +147,7 @@ extension RFC_9293.`3`.`2`.Option {
         // Internal arithmetic-domain UInt8 byte stream; bridge from Byte via
         // .underlying at the conformance boundary.
         func nextByte() -> UInt8? {
-            nextByte()?.underlying
+            iterator.next()?.underlying
         }
 
         guard let kind = nextByte() else {
