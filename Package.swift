@@ -1,4 +1,4 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4
 import PackageDescription
 
 extension String {
@@ -12,35 +12,68 @@ extension Target.Dependency {
     static let rfc9293 = Self.target(name: .rfc9293)
     static let rfc9293Shared = Self.target(name: .rfc9293Shared)
     static let rfc9293Section3 = Self.target(name: .rfc9293Section3)
-    static let standards = Self.product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
+    static let standards = Self.product(
+        name: "Standard Library Extensions",
+        package: "swift-standard-library-extensions"
+    )
     static let binary = Self.product(name: "Binary Primitives", package: "swift-binary-primitives")
-    static let binarySerializable = Self.product(name: "Binary Serializable Primitives", package: "swift-binary-serializer-primitives")
-    static let incits41986 = Self.product(name: "ASCII Primitives", package: "swift-ascii-primitives")
+    static let binarySerializable = Self.product(
+        name: "Binary Serializable Primitives",
+        package: "swift-binary-serializer-primitives"
+    )
+    static let incits41986 = Self.product(
+        name: "ASCII Primitives",
+        package: "swift-ascii-primitives"
+    )
     static let rfc791 = Self.product(name: "RFC 791", package: "swift-rfc-791")
-    static let bytePrimitivesSLI = Self.product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives")
+    static let bytePrimitivesSLI = Self.product(
+        name: "Byte Primitives Standard Library Integration",
+        package: "swift-byte-primitives"
+    )
 }
 
 let package = Package(
     name: "swift-rfc-9293",
     platforms: [
-        .macOS("27"),
-        .iOS("27"),
-        .tvOS("27"),
-        .watchOS("27")
+        .macOS(.v27),
+        .iOS(.v27),
+        .tvOS(.v27),
+        .watchOS(.v27),
     ],
     products: [
         .library(name: "RFC 9293", targets: ["RFC 9293"]),
         .library(name: "RFC 9293 Shared", targets: ["RFC 9293 Shared"]),
-        .library(name: "RFC 9293 3 Functional Specification", targets: ["RFC 9293 3 Functional Specification"]),
-        .library(name: "RFC 9293 Standard Library Integration", targets: ["RFC 9293 Standard Library Integration"])
+        .library(
+            name: "RFC 9293 3 Functional Specification",
+            targets: ["RFC 9293 3 Functional Specification"]
+        ),
+        .library(
+            name: "RFC 9293 Standard Library Integration",
+            targets: ["RFC 9293 Standard Library Integration"]
+        ),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main")
+        .package(
+            url: "https://github.com/swift-primitives/swift-standard-library-extensions.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-binary-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-byte-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-ascii-primitives.git",
+            branch: "main"
+        ),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main"),
     ],
     targets: [
         // Shared types with no dependencies on section targets
@@ -58,7 +91,9 @@ let package = Package(
         // High-level API umbrella
         .target(
             name: "RFC 9293",
-            dependencies: [.rfc9293Shared, .rfc9293Section3, .standards, .rfc791, .binarySerializable]
+            dependencies: [
+                .rfc9293Shared, .rfc9293Section3, .standards, .rfc791, .binarySerializable,
+            ]
         ),
 
         // Stdlib-interop forwarders per [API-BYTE-007]
@@ -69,7 +104,7 @@ let package = Package(
         .testTarget(
             name: "RFC 9293 Tests",
             dependencies: [
-                "RFC 9293",
+                "RFC 9293"
             ]
         ),
         .testTarget(
