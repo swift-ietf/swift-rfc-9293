@@ -1,83 +1,39 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 public import Binary_Serializable_Primitives
 import Standard_Library_Extensions
 
 extension RFC_9293.`3`.`2` {
-    /// TCP Option per RFC 9293 Section 3.2
-    ///
-    /// TCP options provide additional capabilities beyond the basic header.
-    /// Options are variable-length and padded to 32-bit boundaries.
-    ///
-    /// ## Option Kinds
-    ///
-    /// Per RFC 9293 Section 3.2:
-    /// - Kind 0: End of Option List
-    /// - Kind 1: No-Operation
-    /// - Kind 2: Maximum Segment Size
-    /// - Kind 3: Window Scale (RFC 7323)
-    /// - Kind 4: SACK Permitted (RFC 2018)
-    /// - Kind 5: SACK (RFC 2018)
-    /// - Kind 8: Timestamps (RFC 7323)
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let mss = RFC_9293.`3`.`2`.Option.maximumSegmentSize(1460)
-    /// let windowScale = RFC_9293.`3`.`2`.Option.windowScale(7)
-    /// ```
+
     public enum Option: Hashable, Sendable {
-        /// End of Option List (Kind 0)
+
         case endOfOptionList
 
-        /// No-Operation, used for padding (Kind 1)
         case noOperation
 
-        /// Maximum Segment Size (Kind 2)
         case maximumSegmentSize(UInt16)
 
-        /// Window Scale factor (Kind 3, RFC 7323)
         case windowScale(UInt8)
 
-        /// SACK Permitted (Kind 4, RFC 2018)
         case sackPermitted
 
-        /// Selective Acknowledgment (Kind 5, RFC 2018)
         case sack([SACK.Block])
 
-        /// Timestamps (Kind 8, RFC 7323)
         case timestamps(value: UInt32, echoReply: UInt32)
 
-        /// Unknown or unsupported option (kind stays UInt8 to mirror Kind enum
-        /// rawValue; data is opaque byte-domain payload)
         case unknown(kind: UInt8, data: [Byte])
     }
 }
 
-// MARK: - SACK
-
 extension RFC_9293.`3`.`2` {
-    /// Selective Acknowledgment namespace per RFC 2018
+
     public enum SACK {}
 }
 
 extension RFC_9293.`3`.`2`.SACK {
-    /// A SACK block representing a contiguous range of received data
+
     public struct Block: Hashable, Sendable, Codable {
-        /// Left edge of the block (first sequence number)
+
         public let leftEdge: RFC_9293.SequenceNumber
 
-        /// Right edge of the block (sequence number after last)
         public let rightEdge: RFC_9293.SequenceNumber
 
         public init(leftEdge: RFC_9293.SequenceNumber, rightEdge: RFC_9293.SequenceNumber) {
@@ -87,10 +43,8 @@ extension RFC_9293.`3`.`2`.SACK {
     }
 }
 
-// MARK: - Option Kind Constants
-
 extension RFC_9293.`3`.`2`.Option {
-    /// Option kind values per RFC 9293 Section 3.2
+
     public enum Kind: UInt8, Hashable, Sendable {
         case endOfOptionList = 0
         case noOperation = 1
@@ -102,10 +56,8 @@ extension RFC_9293.`3`.`2`.Option {
     }
 }
 
-// MARK: - Computed Properties
-
 extension RFC_9293.`3`.`2`.Option {
-    /// The kind value for this option
+
     public var kind: UInt8 {
         switch self {
         case .endOfOptionList: return 0
@@ -119,7 +71,6 @@ extension RFC_9293.`3`.`2`.Option {
         }
     }
 
-    /// The total length of this option in bytes
     public var length: Int {
         switch self {
         case .endOfOptionList: return 1
@@ -134,18 +85,14 @@ extension RFC_9293.`3`.`2`.Option {
     }
 }
 
-// MARK: - Byte Parsing
-
 extension RFC_9293.`3`.`2`.Option {
-    /// Parses a single option from bytes, returning the option and bytes consumed
+
     public static func parse<Bytes: Swift.Collection>(
         from bytes: Bytes
     ) throws(Error) -> (option: Self, consumed: Int)
     where Bytes.Element == Byte {
         var iterator = bytes.makeIterator()
 
-        // Internal arithmetic-domain UInt8 byte stream; bridge from Byte via
-        // .underlying at the conformance boundary.
         func nextByte() -> UInt8? {
             iterator.next()?.underlying
         }
@@ -254,7 +201,6 @@ extension RFC_9293.`3`.`2`.Option {
         }
     }
 
-    /// Parses all options from a byte buffer
     public static func parseAll<Bytes: Swift.Collection>(
         from bytes: Bytes
     ) throws(Error) -> [Self]
@@ -277,8 +223,6 @@ extension RFC_9293.`3`.`2`.Option {
     }
 }
 
-// MARK: - Binary.Serializable
-
 extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ option: RFC_9293.`3`.`2`.Option,
@@ -299,8 +243,7 @@ extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
         case .windowScale(let shift):
             buffer.append(3)
             buffer.append(3)
-            // shift stays UInt8 (Option.windowScale associated value);
-            // bridge via Byte() at conformance boundary.
+
             buffer.append(Byte(shift))
 
         case .sackPermitted:
@@ -322,16 +265,14 @@ extension RFC_9293.`3`.`2`.Option: Binary.Serializable {
             buffer.append(contentsOf: echoReply.bytes(endianness: .big))
 
         case .unknown(let kind, let data):
-            // kind stays UInt8 (mirrors Kind enum rawValue); bridge.
+
             buffer.append(Byte(kind))
             buffer.append(Byte(UInt8(2 + data.count)))
-            // data is already [Byte] (opaque byte-domain payload).
+
             buffer.append(contentsOf: data)
         }
     }
 }
-
-// MARK: - CustomStringConvertible
 
 extension RFC_9293.`3`.`2`.Option: CustomStringConvertible {
     public var description: String {

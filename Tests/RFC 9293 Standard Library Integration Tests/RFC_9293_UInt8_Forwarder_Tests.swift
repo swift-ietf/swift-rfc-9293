@@ -1,15 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import RFC_9293
 import RFC_9293_Standard_Library_Integration
 import Testing
@@ -38,7 +26,7 @@ struct RFC_9293_UInt8_Forwarder_Tests {
     @Test
     func `Header forwarder accepts [UInt8] options`() throws {
         let dataOffset = try RFC_9293.`3`.`1`.DataOffset(rawValue: 6)
-        let uint8Options: [UInt8] = [0x02, 0x04, 0x05, 0xB4]  // MSS option bytes
+        let uint8Options: [UInt8] = [0x02, 0x04, 0x05, 0xB4]
         let header = RFC_9293.`3`.`1`.Header(
             sourcePort: .init(8080),
             destinationPort: .http,

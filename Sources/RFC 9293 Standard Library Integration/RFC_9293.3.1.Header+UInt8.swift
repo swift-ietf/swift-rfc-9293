@@ -1,27 +1,9 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// Stdlib-interop UInt8 forwarder for TCP header construction. Primary
-// byte-domain API lives in `RFC 9293 3 Functional Specification`; this
-// forwarder bridges stdlib callers carrying `[UInt8]` options (e.g.
-// from parsed network buffers) via `.lazy.map(Byte.init)`. Per
-// [API-BYTE-007] (byte-discipline skill).
-
 internal import Byte_Primitives
 public import RFC_9293_3_Functional_Specification
 public import RFC_9293_Shared
 
 extension RFC_9293.`3`.`1`.Header {
-    /// Stdlib-interop forwarder: construction with `[UInt8]` options.
+
     @_disfavoredOverload
     public init(
         sourcePort: RFC_9293.Port,

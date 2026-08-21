@@ -76,19 +76,17 @@ let package = Package(
         .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main"),
     ],
     targets: [
-        // Shared types with no dependencies on section targets
+
         .target(
             name: "RFC 9293 Shared",
             dependencies: [.standards, .binary, .binarySerializable]
         ),
 
-        // Section 3: Functional Specification
         .target(
             name: "RFC 9293 3 Functional Specification",
             dependencies: [.rfc9293Shared, .standards, .incits41986, .binarySerializable]
         ),
 
-        // High-level API umbrella
         .target(
             name: "RFC 9293",
             dependencies: [
@@ -96,7 +94,6 @@ let package = Package(
             ]
         ),
 
-        // Stdlib-interop forwarders per [API-BYTE-007]
         .target(
             name: "RFC 9293 Standard Library Integration",
             dependencies: [.rfc9293, .rfc9293Section3, .bytePrimitivesSLI]

@@ -1,22 +1,8 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import RFC_9293
 import Testing
 
 @Suite("RFC 9293 Tests")
 struct RFC_9293_Tests {
-
-    // MARK: - Port Tests
 
     @Suite("Port")
     struct PortTests {
@@ -57,7 +43,7 @@ struct RFC_9293_Tests {
 
         @Test
         func `Port byte parsing`() throws {
-            let bytes: [Byte] = [0x1F, 0x90]  // 8080 in big-endian
+            let bytes: [Byte] = [0x1F, 0x90]
             let port = try RFC_9293.Port(bytes: bytes)
             #expect(port.rawValue == 8080)
         }
@@ -70,8 +56,6 @@ struct RFC_9293_Tests {
             #expect(buffer == [0x1F, 0x90])
         }
     }
-
-    // MARK: - Sequence Number Tests
 
     @Suite("SequenceNumber")
     struct SequenceNumberTests {
@@ -93,7 +77,7 @@ struct RFC_9293_Tests {
         func `Modular addition with wraparound`() {
             let seq = RFC_9293.SequenceNumber(rawValue: UInt32.max - 10)
             let next = seq + 20
-            #expect(next.rawValue == 9)  // Wraps around
+            #expect(next.rawValue == 9)
         }
 
         @Test
@@ -106,10 +90,10 @@ struct RFC_9293_Tests {
 
         @Test
         func `Modular comparison - wraparound`() {
-            // When sequence numbers are close to wraparound
+
             let high = RFC_9293.SequenceNumber(rawValue: UInt32.max - 100)
             let low = RFC_9293.SequenceNumber(rawValue: 100)
-            // The "low" value is actually ahead of "high" in sequence space
+
             #expect(high < low)
         }
 
@@ -126,13 +110,11 @@ struct RFC_9293_Tests {
 
         @Test
         func `Sequence number byte parsing`() throws {
-            let bytes: [Byte] = [0x00, 0x01, 0x02, 0x03]  // 66051 in big-endian
+            let bytes: [Byte] = [0x00, 0x01, 0x02, 0x03]
             let seq = try RFC_9293.SequenceNumber(bytes: bytes)
             #expect(seq.rawValue == 0x0001_0203)
         }
     }
-
-    // MARK: - State Tests
 
     @Suite("State")
     struct StateTests {
@@ -177,8 +159,6 @@ struct RFC_9293_Tests {
         }
     }
 
-    // MARK: - Flags Tests
-
     @Suite("Flags")
     struct FlagsTests {
 
@@ -207,8 +187,6 @@ struct RFC_9293_Tests {
             #expect(RFC_9293.`3`.`1`.Flags.finAck == [.fin, .ack])
         }
     }
-
-    // MARK: - DataOffset Tests
 
     @Suite("DataOffset")
     struct DataOffsetTests {
@@ -250,8 +228,6 @@ struct RFC_9293_Tests {
         }
     }
 
-    // MARK: - Header Tests
-
     @Suite("Header")
     struct HeaderTests {
 
@@ -276,24 +252,23 @@ struct RFC_9293_Tests {
 
         @Test
         func `Header byte parsing`() throws {
-            // Construct a minimal 20-byte TCP header
+
             var bytes: [Byte] = []
 
-            // Source port: 8080 (0x1F90)
             bytes.append(contentsOf: [0x1F, 0x90])
-            // Destination port: 80 (0x0050)
+
             bytes.append(contentsOf: [0x00, 0x50])
-            // Sequence number: 12345
+
             bytes.append(contentsOf: [0x00, 0x00, 0x30, 0x39])
-            // Ack number: 0
+
             bytes.append(contentsOf: [0x00, 0x00, 0x00, 0x00])
-            // Data offset (5) + reserved (0) = 0x50, flags (SYN = 0x02)
+
             bytes.append(contentsOf: [0x50, 0x02])
-            // Window: 65535
+
             bytes.append(contentsOf: [0xFF, 0xFF])
-            // Checksum: 0
+
             bytes.append(contentsOf: [0x00, 0x00])
-            // Urgent pointer: 0
+
             bytes.append(contentsOf: [0x00, 0x00])
 
             let header = try RFC_9293.`3`.`1`.Header(bytes: bytes)
@@ -328,8 +303,6 @@ struct RFC_9293_Tests {
             #expect(parsed.window == original.window)
         }
     }
-
-    // MARK: - Option Tests
 
     @Suite("Option")
     struct OptionTests {
@@ -371,8 +344,6 @@ struct RFC_9293_Tests {
         }
     }
 
-    // MARK: - Constants Tests
-
     @Suite("Constants")
     struct ConstantsTests {
 
@@ -399,8 +370,6 @@ struct RFC_9293_Tests {
             #expect(RFC_9293.timeWaitDurationSeconds == 240)
         }
     }
-
-    // MARK: - TCB Tests
 
     @Suite("TCB")
     struct TCBTests {
