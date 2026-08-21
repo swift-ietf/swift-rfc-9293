@@ -11,7 +11,7 @@
 // ===----------------------------------------------------------------------===//
 
 public import Binary_Serializable_Primitives
-public import Standard_Library_Extensions
+import Standard_Library_Extensions
 
 extension RFC_9293 {
     /// TCP Segment per RFC 9293
