@@ -1,14 +1,15 @@
+import Byte
 import RFC_9293
 import RFC_9293_Standard_Library_Integration
 import Testing
 
-@Suite("RFC 9293 UInt8 forwarders")
-struct RFC_9293_UInt8_Forwarder_Tests {
+@Suite
+struct `RFC_9293 UInt8 Forwarder Tests` {
 
     @Test
-    func `Segment forwarder accepts [UInt8] data`() {
+    func `a segment accepts its data as unsigned bytes`() {
         let header = RFC_9293.`3`.`1`.Header(
-            sourcePort: .init(8080),
+            sourcePort: 8080,
             destinationPort: .http,
             sequenceNumber: .init(rawValue: 12345),
             acknowledgmentNumber: .init(rawValue: 0),
@@ -17,29 +18,31 @@ struct RFC_9293_UInt8_Forwarder_Tests {
             checksum: 0,
             urgentPointer: 0
         )
-        let uint8Data: [UInt8] = Array("Hello".utf8)
-        let segment = RFC_9293.Segment(header: header, data: uint8Data)
+
+        let data: [UInt8] = Array("Hello".utf8)
+        let segment = RFC_9293.Segment(header: header, data: data)
+
         #expect(segment.data.count == 5)
-        #expect(segment.data == [Byte](uint8Data.lazy.map(Byte.init)))
+        #expect(segment.data == data.map(Byte.init(bitPattern:)))
     }
 
     @Test
-    func `Header forwarder accepts [UInt8] options`() throws {
-        let dataOffset = try RFC_9293.`3`.`1`.DataOffset(rawValue: 6)
-        let uint8Options: [UInt8] = [0x02, 0x04, 0x05, 0xB4]
+    func `a header accepts its options as unsigned bytes`() throws {
+        let options: [UInt8] = [0x02, 0x04, 0x05, 0xB4]
         let header = RFC_9293.`3`.`1`.Header(
-            sourcePort: .init(8080),
+            sourcePort: 8080,
             destinationPort: .http,
             sequenceNumber: .init(rawValue: 12345),
             acknowledgmentNumber: .init(rawValue: 0),
-            dataOffset: dataOffset,
+            dataOffset: try .init(rawValue: 6),
             flags: [.syn],
             window: 65535,
             checksum: 0,
             urgentPointer: 0,
-            options: uint8Options
+            options: options
         )
+
         #expect(header.options.count == 4)
-        #expect(header.options == [Byte](uint8Options.lazy.map(Byte.init)))
+        #expect(header.options == options.map(Byte.init(bitPattern:)))
     }
 }

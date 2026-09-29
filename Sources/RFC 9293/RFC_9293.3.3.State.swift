@@ -1,6 +1,6 @@
 extension RFC_9293.`3`.`3` {
 
-    public enum State: String, Hashable, Sendable, Codable, CaseIterable {
+    public enum State: String, Hashable, Sendable, CaseIterable {
 
         case closed = "CLOSED"
 

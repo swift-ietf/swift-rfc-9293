@@ -1,9 +1,6 @@
-public import Binary_Serializable
-import Standard_Library_Extensions
-
 extension RFC_9293.`3`.`1` {
 
-    public struct DataOffset: Hashable, Sendable, Codable {
+    public struct DataOffset: Hashable, Sendable {
 
         public let rawValue: UInt8
 
@@ -44,16 +41,6 @@ extension RFC_9293.`3`.`1`.DataOffset {
         guard bytes <= 60 else { throw .valueTooLarge }
         guard bytes % 4 == 0 else { throw .notAligned }
         return Self(__unchecked: (), rawValue: UInt8(bytes / 4))
-    }
-}
-
-extension RFC_9293.`3`.`1`.DataOffset: Binary.Serializable {
-    public static func serialize<Buffer: RangeReplaceableCollection>(
-        _ offset: RFC_9293.`3`.`1`.DataOffset,
-        into buffer: inout Buffer
-    ) where Buffer.Element == Byte {
-
-        buffer.append(Byte(offset.rawValue << 4))
     }
 }
 

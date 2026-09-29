@@ -1,6 +1,5 @@
-internal import Byte
-public import RFC_9293_3_Functional_Specification
-public import RFC_9293_Shared
+import Byte
+public import RFC_9293
 
 extension RFC_9293.`3`.`1`.Header {
 
@@ -27,7 +26,7 @@ extension RFC_9293.`3`.`1`.Header {
             window: window,
             checksum: checksum,
             urgentPointer: urgentPointer,
-            options: [Byte](options.lazy.map(Byte.init))
+            options: [Byte](options.lazy.map(Byte.init(bitPattern:)))
         )
     }
 }

@@ -1,5 +1,4 @@
-public import Binary_Serializable
-import Standard_Library_Extensions
+public import Byte
 
 extension RFC_9293 {
 
@@ -52,44 +51,6 @@ extension RFC_9293.Segment {
         if header.flags.contains(.syn) { len += 1 }
         if header.flags.contains(.fin) { len += 1 }
         return len
-    }
-}
-
-extension RFC_9293.Segment {
-
-    public init<Bytes: Swift.Collection>(bytes: Bytes) throws(Error)
-    where Bytes.Element == Byte {
-
-        let header: RFC_9293.`3`.`1`.Header
-        let headerOutcome = Result { () throws(RFC_9293.`3`.`1`.Header.Error) in
-            try RFC_9293.`3`.`1`.Header(bytes: bytes)
-        }
-        switch headerOutcome {
-        case .success(let value):
-            header = value
-
-        case .failure(let error):
-            switch error {
-            case .insufficientBytes: throw Error.insufficientBytes
-            case .dataOffsetTooSmall: throw Error.invalidDataOffset
-            case .dataOffsetTooLarge: throw Error.invalidDataOffset
-            }
-        }
-
-        let headerLength = header.dataOffset.headerLength
-        let data = Array(bytes.dropFirst(headerLength))
-
-        self.init(__unchecked: (), header: header, data: data)
-    }
-}
-
-extension RFC_9293.Segment: Binary.Serializable {
-    public static func serialize<Buffer: RangeReplaceableCollection>(
-        _ segment: RFC_9293.Segment,
-        into buffer: inout Buffer
-    ) where Buffer.Element == Byte {
-        RFC_9293.`3`.`1`.Header.serialize(segment.header, into: &buffer)
-        buffer.append(contentsOf: segment.data)
     }
 }
 

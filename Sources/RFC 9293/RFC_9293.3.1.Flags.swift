@@ -1,9 +1,6 @@
-public import Binary_Serializable
-import Standard_Library_Extensions
-
 extension RFC_9293.`3`.`1` {
 
-    public struct Flags: OptionSet, Hashable, Sendable, Codable {
+    public struct Flags: OptionSet, Hashable, Sendable {
         public let rawValue: UInt8
 
         public init(rawValue: UInt8) {
@@ -38,16 +35,6 @@ extension RFC_9293.`3`.`1`.Flags {
     public static let synAck: Self = [.syn, .ack]
 
     public static let finAck: Self = [.fin, .ack]
-}
-
-extension RFC_9293.`3`.`1`.Flags: Binary.Serializable {
-    public static func serialize<Buffer: RangeReplaceableCollection>(
-        _ flags: RFC_9293.`3`.`1`.Flags,
-        into buffer: inout Buffer
-    ) where Buffer.Element == Byte {
-
-        buffer.append(Byte(flags.rawValue))
-    }
 }
 
 extension RFC_9293.`3`.`1`.Flags: CustomStringConvertible {
