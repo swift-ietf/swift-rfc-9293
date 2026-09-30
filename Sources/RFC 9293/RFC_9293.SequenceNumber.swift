@@ -16,7 +16,8 @@ extension RFC_9293 {
 extension RFC_9293.SequenceNumber: Comparable {
 
     public static func < (lhs: Self, rhs: Self) -> Bool {
-        Int32(bitPattern: lhs.rawValue &- rhs.rawValue) < 0
+        let difference = lhs.rawValue &- rhs.rawValue
+        return difference == 1 << 31 ? lhs.rawValue < rhs.rawValue : Int32(bitPattern: difference) < 0
     }
 }
 
