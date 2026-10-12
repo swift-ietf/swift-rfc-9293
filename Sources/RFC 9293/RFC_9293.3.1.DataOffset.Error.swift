@@ -1,6 +1,6 @@
 extension RFC_9293.`3`.`1`.DataOffset {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
         case insufficientBytes
         case valueTooSmall
         case valueTooLarge

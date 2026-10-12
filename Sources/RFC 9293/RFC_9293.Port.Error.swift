@@ -1,6 +1,6 @@
 extension RFC_9293.Port {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
         case empty
         case insufficientBytes
     }
