@@ -21,9 +21,21 @@ let package = Package(
             targets: ["RFC 9293 Foundation Integration"]
         ),
     ],
+    traits: [
+        .trait(name: "Coder", description: "Wire coders for RFC 9293 types")
+    ],
     dependencies: [
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main"),
+        .package(
+            url: "https://github.com/swift-atoms/swift-binary.git",
+            branch: "main",
+            traits: [.trait(name: "Serializer", condition: .when(traits: ["Coder"]))]
+        ),
+        .package(url: "https://github.com/swift-atoms/swift-coder.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-cursor.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-parser.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-serializer.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -31,6 +43,11 @@ let package = Package(
             dependencies: [
                 .product(name: "Byte", package: "swift-byte"),
                 .product(name: "RFC 791", package: "swift-rfc-791"),
+                .product(name: "Coder", package: "swift-coder", condition: .when(traits: ["Coder"])),
+                .product(name: "Cursor", package: "swift-cursor", condition: .when(traits: ["Coder"])),
+                .product(name: "Parser", package: "swift-parser", condition: .when(traits: ["Coder"])),
+                .product(name: "Serializer", package: "swift-serializer", condition: .when(traits: ["Coder"])),
+                .product(name: "Binary", package: "swift-binary", condition: .when(traits: ["Coder"])),
             ]
         ),
         .target(
@@ -53,6 +70,10 @@ let package = Package(
                 .product(name: "Byte", package: "swift-byte"),
                 .product(name: "RFC 791", package: "swift-rfc-791"),
                 .product(name: "RFC 791 Standard Library Integration", package: "swift-rfc-791"),
+                .product(name: "Coder", package: "swift-coder", condition: .when(traits: ["Coder"])),
+                .product(name: "Cursor", package: "swift-cursor", condition: .when(traits: ["Coder"])),
+                .product(name: "Parser", package: "swift-parser", condition: .when(traits: ["Coder"])),
+                .product(name: "Serializer", package: "swift-serializer", condition: .when(traits: ["Coder"])),
             ]
         ),
         .testTarget(
