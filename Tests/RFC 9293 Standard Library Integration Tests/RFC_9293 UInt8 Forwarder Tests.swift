@@ -29,12 +29,11 @@ struct `RFC_9293 UInt8 Forwarder Tests` {
     @Test
     func `a header accepts its options as unsigned bytes`() throws {
         let options: [UInt8] = [0x02, 0x04, 0x05, 0xB4]
-        let header = RFC_9293.`3`.`1`.Header(
+        let header = try RFC_9293.`3`.`1`.Header(
             sourcePort: 8080,
             destinationPort: .http,
             sequenceNumber: .init(rawValue: 12345),
             acknowledgmentNumber: .init(rawValue: 0),
-            dataOffset: try .init(rawValue: 6),
             flags: [.syn],
             window: 65535,
             checksum: 0,

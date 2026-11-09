@@ -26,7 +26,7 @@
                     input.seek(to: start)
                     switch error {
                     case .insufficientBytes: throw .insufficientBytes
-                    case .dataOffsetTooSmall, .dataOffsetTooLarge: throw .invalidDataOffset
+                    case .dataOffsetTooSmall, .dataOffsetTooLarge, .optionsTooLong: throw .invalidDataOffset
                     }
                 }
 

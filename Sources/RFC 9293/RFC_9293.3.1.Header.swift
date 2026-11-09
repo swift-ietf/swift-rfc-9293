@@ -54,13 +54,19 @@ extension RFC_9293.`3`.`1` {
             destinationPort: RFC_9293.Port,
             sequenceNumber: RFC_9293.SequenceNumber,
             acknowledgmentNumber: RFC_9293.SequenceNumber,
-            dataOffset: DataOffset,
             flags: Flags,
             window: UInt16,
             checksum: UInt16,
             urgentPointer: UInt16,
             options: [Byte]
-        ) {
+        ) throws(Error) {
+            let padded = options + [Byte](repeating: Byte(bitPattern: 0), count: (4 - options.count % 4) % 4)
+            let dataOffset: DataOffset
+            do throws(DataOffset.Error) {
+                dataOffset = try .fromHeaderLength(20 + padded.count)
+            } catch {
+                throw .optionsTooLong
+            }
             self.init(
                 __unchecked: (),
                 sourcePort: sourcePort,
@@ -72,7 +78,7 @@ extension RFC_9293.`3`.`1` {
                 window: window,
                 checksum: checksum,
                 urgentPointer: urgentPointer,
-                options: options
+                options: padded
             )
         }
 

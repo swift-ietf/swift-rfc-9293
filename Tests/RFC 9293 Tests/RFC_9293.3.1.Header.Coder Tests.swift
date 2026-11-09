@@ -141,5 +141,25 @@
             #expect(input.count == 20)
             #expect(try RFC_9293.`3`.`1`.Header.coder.parse(&input) == header)
         }
+
+        @Test
+        func `a header with unaligned options survives the round trip`() throws {
+            let header = try RFC_9293.`3`.`1`.Header(
+                sourcePort: 12345,
+                destinationPort: .https,
+                sequenceNumber: .init(rawValue: 999_999),
+                acknowledgmentNumber: .init(rawValue: 888_888),
+                flags: .synAck,
+                window: 32768,
+                checksum: 0xABCD,
+                urgentPointer: 0,
+                options: [Byte(bitPattern: 0x01), Byte(bitPattern: 0x03), Byte(bitPattern: 0x03), Byte(bitPattern: 0x07), Byte(bitPattern: 0x01)]
+            )
+
+            var input = try RFC_9293.`3`.`1`.Header.coder.serialize(header)[...]
+
+            #expect(input.count == 28)
+            #expect(try RFC_9293.`3`.`1`.Header.coder.parse(&input) == header)
+        }
     }
 #endif

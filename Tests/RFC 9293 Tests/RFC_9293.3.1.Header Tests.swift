@@ -27,12 +27,11 @@ struct `RFC_9293.3.1.Header Tests` {
 
     @Test
     func `a header carries its options beside the data offset that measures them`() throws {
-        let header = RFC_9293.`3`.`1`.Header(
+        let header = try RFC_9293.`3`.`1`.Header(
             sourcePort: 8080,
             destinationPort: .http,
             sequenceNumber: .init(rawValue: 12345),
             acknowledgmentNumber: .init(rawValue: 0),
-            dataOffset: try .init(rawValue: 6),
             flags: [.syn],
             window: 65535,
             checksum: 0,
@@ -48,6 +47,48 @@ struct `RFC_9293.3.1.Header Tests` {
         #expect(header.dataOffset.headerLength == 24)
         #expect(header.dataOffset.optionsLength == 4)
         #expect(header.options.count == 4)
+    }
+
+    @Test
+    func `a header pads its options to a whole word`() throws {
+        let header = try RFC_9293.`3`.`1`.Header(
+            sourcePort: 8080,
+            destinationPort: .http,
+            sequenceNumber: .init(rawValue: 12345),
+            acknowledgmentNumber: .init(rawValue: 0),
+            flags: [.syn],
+            window: 65535,
+            checksum: 0,
+            urgentPointer: 0,
+            options: [
+                Byte(bitPattern: 0x01),
+                Byte(bitPattern: 0x03),
+                Byte(bitPattern: 0x03),
+                Byte(bitPattern: 0x07),
+                Byte(bitPattern: 0x01),
+            ]
+        )
+
+        #expect(header.dataOffset == (try .init(rawValue: 7)))
+        #expect(header.options.count == header.dataOffset.optionsLength)
+        #expect(header.options.suffix(3) == [Byte(bitPattern: 0), Byte(bitPattern: 0), Byte(bitPattern: 0)])
+    }
+
+    @Test
+    func `a header rejects options longer than ten words`() {
+        #expect(throws: RFC_9293.`3`.`1`.Header.Error.optionsTooLong) {
+            try RFC_9293.`3`.`1`.Header(
+                sourcePort: 8080,
+                destinationPort: .http,
+                sequenceNumber: .init(rawValue: 12345),
+                acknowledgmentNumber: .init(rawValue: 0),
+                flags: [.syn],
+                window: 65535,
+                checksum: 0,
+                urgentPointer: 0,
+                options: [Byte](repeating: Byte(bitPattern: 0x01), count: 41)
+            )
+        }
     }
 
     @Test

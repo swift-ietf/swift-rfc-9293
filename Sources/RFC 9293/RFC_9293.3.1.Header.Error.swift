@@ -4,6 +4,7 @@ extension RFC_9293.`3`.`1`.Header {
         case insufficientBytes
         case dataOffsetTooSmall
         case dataOffsetTooLarge
+        case optionsTooLong
     }
 }
 
@@ -18,6 +19,9 @@ extension RFC_9293.`3`.`1`.Header.Error: CustomStringConvertible {
 
         case .dataOffsetTooLarge:
             return "Data offset cannot exceed 15 (60 bytes)"
+
+        case .optionsTooLong:
+            return "TCP options cannot exceed 40 bytes"
         }
     }
 }

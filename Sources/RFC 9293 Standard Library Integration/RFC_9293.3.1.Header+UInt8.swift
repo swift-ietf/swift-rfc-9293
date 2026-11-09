@@ -9,19 +9,17 @@ extension RFC_9293.`3`.`1`.Header {
         destinationPort: RFC_9293.Port,
         sequenceNumber: RFC_9293.SequenceNumber,
         acknowledgmentNumber: RFC_9293.SequenceNumber,
-        dataOffset: RFC_9293.`3`.`1`.DataOffset,
         flags: RFC_9293.`3`.`1`.Flags,
         window: UInt16,
         checksum: UInt16,
         urgentPointer: UInt16,
         options: [UInt8]
-    ) {
-        self.init(
+    ) throws(Error) {
+        try self.init(
             sourcePort: sourcePort,
             destinationPort: destinationPort,
             sequenceNumber: sequenceNumber,
             acknowledgmentNumber: acknowledgmentNumber,
-            dataOffset: dataOffset,
             flags: flags,
             window: window,
             checksum: checksum,

@@ -81,12 +81,11 @@
                     options.append(byte)
                 }
 
-                return RFC_9293.`3`.`1`.Header(
+                return try RFC_9293.`3`.`1`.Header(
                     sourcePort: sourcePort,
                     destinationPort: destinationPort,
                     sequenceNumber: sequenceNumber,
                     acknowledgmentNumber: acknowledgmentNumber,
-                    dataOffset: dataOffset,
                     flags: flags,
                     window: window,
                     checksum: checksum,
