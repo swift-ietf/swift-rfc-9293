@@ -58,7 +58,7 @@ extension RFC_9293.`3`.`3`.Send.Variables {
     }
 
     public var usableWindow: UInt32 {
-        return una + UInt32(wnd) - nxt
+        nxt < windowEnd ? windowEnd - nxt : 0
     }
 
     public var isWindowFull: Bool {

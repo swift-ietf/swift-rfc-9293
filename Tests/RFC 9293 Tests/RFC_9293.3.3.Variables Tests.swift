@@ -37,4 +37,42 @@ struct `RFC_9293.3.3 Sequence Variables Tests` {
         #expect(!receive.isInWindow(.init(rawValue: 700)))
         #expect(receive.description == "RCV(NXT=501 WND=100 IRS=500)")
     }
+
+    @Test
+    func `the usable send window is zero once everything the window allows is sent`() {
+        var send = RFC_9293.`3`.`3`.Send.Variables(iss: .init(rawValue: 1000))
+        send.wnd = 100
+        send.nxt = .init(rawValue: 1100)
+
+        #expect(send.usableWindow == 0)
+        #expect(send.isWindowFull)
+
+        send.nxt = .init(rawValue: 1150)
+
+        #expect(send.usableWindow == 0)
+        #expect(send.isWindowFull)
+    }
+
+    @Test
+    func `the receive window excludes its right edge`() {
+        let receive = RFC_9293.`3`.`3`.Receive.Variables(
+            irs: .init(rawValue: 500),
+            windowSize: 100
+        )
+
+        #expect(receive.isInWindow(receive.nxt))
+        #expect(receive.isInWindow(.init(rawValue: 600)))
+        #expect(!receive.isInWindow(receive.windowEnd))
+        #expect(!receive.isInWindow(.init(rawValue: 500)))
+    }
+
+    @Test
+    func `an empty receive window holds no sequence number`() {
+        let receive = RFC_9293.`3`.`3`.Receive.Variables(
+            irs: .init(rawValue: 500),
+            windowSize: 0
+        )
+
+        #expect(!receive.isInWindow(receive.nxt))
+    }
 }

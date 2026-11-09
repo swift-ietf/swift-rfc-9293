@@ -43,7 +43,7 @@ extension RFC_9293.`3`.`3`.Receive.Variables {
     }
 
     public func isInWindow(_ seq: RFC_9293.SequenceNumber) -> Bool {
-        seq.isWithin(left: nxt, right: windowEnd)
+        nxt <= seq && seq < windowEnd
     }
 }
 
