@@ -15,6 +15,7 @@ extension RFC_9293.`3`.`1`.Header {
         urgentPointer: UInt16,
         options: [UInt8]
     ) throws(Error) {
+        let bytes = [Byte](options.lazy.map(Byte.init(bitPattern:)))
         try self.init(
             sourcePort: sourcePort,
             destinationPort: destinationPort,
@@ -24,7 +25,7 @@ extension RFC_9293.`3`.`1`.Header {
             window: window,
             checksum: checksum,
             urgentPointer: urgentPointer,
-            options: [Byte](options.lazy.map(Byte.init(bitPattern:)))
+            options: bytes
         )
     }
 }
