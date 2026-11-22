@@ -1,11 +1,11 @@
 # swift-rfc-9293
 
-Use this package when you read or write TCP segments, or keep the bookkeeping of a TCP connection, as defined by RFC 9293. Start from `RFC_9293.Segment` for a segment on the wire, `RFC_9293.SequenceNumber` for sequence arithmetic, and `RFC_9293.TCB` for a connection's state and sequence variables. It doesn't run the state machine, retransmit or compute checksums. For UDP, use swift-rfc-768; IPv4 addresses come from swift-rfc-791.
+Use this package when you read or write TCP segments, or keep the bookkeeping of a TCP connection, as defined by RFC 9293. Start from `IETF.RFC.`9293`.Segment` for a segment on the wire, `IETF.RFC.`9293`.SequenceNumber` for sequence arithmetic, and `IETF.RFC.`9293`.TCB` for a connection's state and sequence variables. It doesn't run the state machine, retransmit or compute checksums. For UDP, use swift-rfc-768; IPv4 addresses come from swift-rfc-791.
 
 ## Laws
 
 - Sequence numbers add and subtract modulo 2^32. One number is less than another when it is less than half the space behind it. Two numbers exactly half the space apart are ordered by raw value, so the order is never ambiguous, but it is not transitive across the whole space. Compare numbers only within a window narrower than half the space, and don't sort them.
-- `RFC_9293.SequenceNumber.isWithin(left:right:)` includes both ends, and `RFC_9293.SequenceNumber.isBetween(left:right:)` excludes both.
+- `IETF.RFC.`9293`.SequenceNumber.isWithin(left:right:)` includes both ends, and `IETF.RFC.`9293`.SequenceNumber.isBetween(left:right:)` excludes both.
 - SYN and FIN each take one sequence number, so a segment's sequence length is its data plus one for each of those flags.
 - The data offset counts the header in four-byte words, from 5 (20 bytes, no options) to 15 (60 bytes). It is written in the high four bits of its byte. The low four bits are written as zero and ignored when read.
 - Reading a header takes exactly the option bytes its data offset announces and keeps them as raw bytes. Reading a segment takes everything after the header as data. Each failed read puts the input back where it started.
